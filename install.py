@@ -47,36 +47,7 @@ class AuroraInstaller(ExtensionInstaller):
                 'Aurora': {
                     'model': 'replace_me',
                     'port': 'replace_me',
-                    'address': '2',
-                    'max_tries': '3',
-                    'loop_interval': '10',
-                    'use_inverter_time': 'false',
-                    'driver': 'user.aurora',
-                    'FieldMap': {
-                        'string1Voltage': 'getStr1V',
-                        'string1Current': 'getStr1C',
-                        'string1Power': 'getStr1P',
-                        'string2Voltage': 'getStr2V',
-                        'string2Current': 'getStr2C',
-                        'string2Power': 'getStr2P',
-                        'gridVoltage': 'getGridV',
-                        'gridCurrent': 'getGridC',
-                        'gridPower': 'getGridP',
-                        'gridFrequency': 'getFrequency',
-                        'inverterTemp': 'getInverterT',
-                        'boosterTemp': 'getBoosterT',
-                        'bulkVoltage': 'getBulkV',
-                        'isoResistance': 'getIsoR',
-                        'bulkmidVoltage': 'getBulkMidV',
-                        'bulkdcVoltage': 'getBulkDcV',
-                        'leakdcCurrent': 'getLeakDcC',
-                        'leakCurrent': 'getLeakC',
-                        'griddcVoltage': 'getGridDcV',
-                        'gridavgVoltage': 'getGridAvV',
-                        'gridnVoltage': 'getPeakP',
-                        'griddcFrequency': 'getGridDcFreq',
-                        'dayEnergy': 'getDayEnergy'
-                    }
+                    'driver': 'user.aurora'
                 'Accumulator': {
                     'energy': {
                         'extractor': 'sum'
