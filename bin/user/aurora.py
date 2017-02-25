@@ -508,7 +508,7 @@ class AuroraDriver(weewx.drivers.AbstractDevice):
 
         # model
         self.model = aurora_dict.get('model', 'Aurora')
-        logdbg('AuroraDriver: %s driver version is %s' % (self.model, DRIVER_VERSION))
+        logdbg('%s driver version is %s' % (self.model, DRIVER_VERSION))
         # serial comms options
         try:
             port = aurora_dict.get('port', '/dev/ttyUSB0')
@@ -518,25 +518,25 @@ class AuroraDriver(weewx.drivers.AbstractDevice):
         timeout = float(aurora_dict.get('timeout', 2.0))
         wait_before_retry = float(aurora_dict.get('wait_before_retry', 1.0))
         command_delay = float(aurora_dict.get('command_delay', 0.05))
-        logdbg('              Using port %s baudrate %d timeout %s' % (port,
+        logdbg('   using port %s baudrate %d timeout %s' % (port,
                                                                        baudrate,
                                                                        timeout))
-        logdbg('              wait_before_retry %s command_delay %s' % (wait_before_retry,
+        logdbg('   wait_before_retry %s command_delay %s' % (wait_before_retry,
                                                                         command_delay))
         # driver options
         self.max_command_tries = int(aurora_dict.get('max_command_tries', 3))
         self.polling_interval = int(aurora_dict.get('loop_interval', 10))
         self.address = int(aurora_dict.get('address', 2))
         self.max_loop_tries = int(aurora_dict.get('max_loop_tries', 3))
-        logdbg('              Inverter address %d will be polled every %d seconds' %
+        logdbg('   inverter address %d will be polled every %d seconds' %
                    (self.address, self.polling_interval))
-        logdbg('              max_command_tries %d max_loop_tries %d' %
+        logdbg('   max_command_tries %d max_loop_tries %d' %
                    (self.max_command_tries, self.max_loop_tries))
         self.use_inverter_time = to_bool(aurora_dict.get('use_inverter_time', False))
         if self.use_inverter_time:
-            logdbg('              Inverter time will be used to timestamp data')
+            logdbg('   inverter time will be used to timestamp data')
         else:
-            logdbg('              WeeWX system time will be used to timestamp data')
+            logdbg('   weeWX system time will be used to timestamp data')
 
         # get an AuroraInverter object
         self.inverter = AuroraInverter(port,
@@ -625,10 +625,9 @@ class AuroraDriver(weewx.drivers.AbstractDevice):
                     while time.time() < _ts + self.polling_interval:
                         time.sleep(0.2)
                 except IOError, e:
-                    logerr("genLoopPackets: LOOP try #%d; error: %s" %
-                               (count + 1, e))
+                    logerr("LOOP try #%d; error: %s" % (count + 1, e))
                     break
-        logerr("genLoopPackets: LOOP max tries (%d) exceeded." % self.max_loop_tries)
+        logerr("LOOP max tries (%d) exceeded." % self.max_loop_tries)
         raise weewx.RetriesExceeded("Max tries exceeded while getting LOOP data.")
 
     def get_raw_packet(self):
@@ -766,15 +765,15 @@ class AuroraDriver(weewx.drivers.AbstractDevice):
             # where we can check the transmission state and global state.
             if _response.transmission_state == 0 and _response.global_state == 6:
                 # good response so log it
-                loginf("setTime: Inverter time set")
+                loginf("Inverter time set")
             else:
                 # something went wrong, it's not fatal but we need to log the
                 # failure and the returned states
-                logerr("setTime: Inverter time was not set")
-                logerr("setTime:   ***** transmission state=%d (%s)" %
+                logerr("Inverter time was not set")
+                logerr("  ***** transmission state=%d (%s)" %
                            (_response.transmission_state,
                             TRANSMISSION[response_rt.transmission_state]))
-                logerr("setTime:   ***** global state=%d (%s)" %
+                logerr("  ***** global state=%d (%s)" %
                            (_response.global_state,
                             GLOBAL[response_rt.global_state]))
 
@@ -982,10 +981,9 @@ class AuroraInverter(object):
 
         self.serial_port = serial.Serial(port=self.port, baudrate=self.baudrate,
                                          timeout=self.timeout)
-        logdbg("AuroraInverter: Opened serial port %s; baud %d; timeout %.2f"
-                   % (self.port,
-                      self.baudrate,
-                      self.timeout))
+        logdbg("Opened serial port %s; baud %d; timeout %.2f" % (self.port,
+                                                                 self.baudrate,
+                                                                 self.timeout))
 
     def close_port(self):
         """Close a serial port."""
@@ -1011,8 +1009,8 @@ class AuroraInverter(object):
         try:
             N = self.serial_port.write(data)
         except serial.serialutil.SerialException, e:
-            logerr("AuroraInverter: SerialException on write.")
-            logerr("                  ***** %s" % e)
+            logerr("SerialException on write.")
+            logerr("  ***** %s" % e)
             # reraise as a weeWX error I/O error:
             raise weewx.WeeWxIOError(e)
         # Python version 2.5 and earlier returns 'None', so it cannot be used
@@ -1038,9 +1036,9 @@ class AuroraInverter(object):
         try:
             _buffer = self.serial_port.read(bytes)
         except serial.serialutil.SerialException, e:
-            logerr("AuroraInverter: SerialException on read.")
-            logerr("                  ***** %s" % e)
-            logerr("                  ***** Is there a competing process running??")
+            logerr("SerialException on read.")
+            logerr("  ***** %s" % e)
+            logerr("  ***** Is there a competing process running??")
             raise
             # reraise as a weeWX error I/O error:
             raise weewx.WeeWxIOError(e)
@@ -1108,15 +1106,15 @@ class AuroraInverter(object):
 
                 if count + 1 < max_tries:
                     # log that we are about to cycle the port
-                    loginf("AuroraInverter: CRC error on try #%d. Cycling port." % (count + 1,))
+                    loginf("CRC error on try #%d. Cycling port." % (count + 1,))
                     # close the port, wait 0.2 sec then open the port
                     self.close_port()
                     time.sleep(0.2)
                     self.open_port()
                     # log that the port has been cycled
-                    loginf("AuroraInverter: Port cycle complete.")
+                    loginf("Port cycle complete.")
                 else:
-                    loginf("AuroraInverter: CRC error on try #%d." % (count + 1,))
+                    loginf("CRC error on try #%d." % (count + 1,))
                 continue
             except weewx.WeeWxIOError:
                 pass
@@ -1126,7 +1124,7 @@ class AuroraInverter(object):
                 logdbg2("send_cmd_with_crc: retrying")
             else:
                 logdbg2("send_cmd_with_crc: try #%d unsuccessful" % (count + 1,))
-        logdbg("AuroraInverter: Unable to send or receive data to/from the inverter")
+        logdbg("Unable to send or receive data to/from the inverter")
         raise weewx.WeeWxIOError("Unable to send or receive data to/from the inverter")
 
     def read_with_crc(self, bytes=8):
@@ -1209,9 +1207,9 @@ class AuroraInverter(object):
         if crc == crc_bytes:
             return data
         else:
-            logerr("AuroraInverter: Inverter response failed CRC check:")
-            logerr("                  ***** response=%s" % (format_byte_to_hex(buffer)))
-            logerr("                  *****     data=%s        CRC=%s  expected CRC=%s" %
+            logerr("Inverter response failed CRC check:")
+            logerr("  ***** response=%s" % (format_byte_to_hex(buffer)))
+            logerr("  *****     data=%s        CRC=%s  expected CRC=%s" %
                        (format_byte_to_hex(data),
                        format_byte_to_hex(crc_bytes),
                        format_byte_to_hex(crc)))
